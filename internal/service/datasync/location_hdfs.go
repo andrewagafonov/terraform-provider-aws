@@ -166,11 +166,19 @@ func resourceLocationHdfsCreate(d *schema.ResourceData, meta interface{}) error 
 	}
 
 	if v, ok := d.GetOk("kerberos_krb5_conf"); ok {
-		input.KerberosKrb5Conf = []byte(v.(string))
+		var err error
+		input.KerberosKrb5Conf, err = base64.StdEncoding.DecodeString(v.(string))
+		if err != nil {
+			return fmt.Errorf("error decoding Kerberos krb5 conf: %w", err)
+		}
 	}
 
 	if v, ok := d.GetOk("kerberos_keytab"); ok {
-		input.KerberosKeytab = []byte(v.(string))
+		var err error
+		input.KerberosKeytab, err = base64.StdEncoding.DecodeString(v.(string))
+		if err != nil {
+			return fmt.Errorf("error decoding Kerberos keytab: %w", err)
+		}
 	}
 
 	if v, ok := d.GetOk("kerberos_principal"); ok {
@@ -287,11 +295,19 @@ func resourceLocationHdfsUpdate(d *schema.ResourceData, meta interface{}) error 
 		}
 
 		if d.HasChange("kerberos_keytab") {
-			input.KerberosKeytab = []byte(d.Get("kerberos_keytab").(string))
+			var err error
+			input.KerberosKeytab, err = base64.StdEncoding.DecodeString(d.Get("kerberos_keytab").(string))
+			if err != nil {
+				return fmt.Errorf("error decoding Kerberos keytab: %w", err)
+			}
 		}
 
 		if d.HasChange("kerberos_krb5_conf") {
-			input.KerberosKrb5Conf = []byte(d.Get("kerberos_krb5_conf").(string))
+			var err error
+			input.KerberosKrb5Conf, err = base64.StdEncoding.DecodeString(d.Get("kerberos_krb5_conf").(string))
+			if err != nil {
+				return fmt.Errorf("error decoding Kerberos krb5 conf: %w", err)
+			}
 		}
 
 		if d.HasChange("kerberos_principal") {
